@@ -83,33 +83,29 @@ class Cat < Fighter
 	end
 end
 
-cat = Cat.new "cat"
+# cat = Cat.new "cat"
 
-dog = Dog.new "dog"
+# dog = Dog.new "dog"
 
-def battle one, two
-	if one.speed > two.speed
-		two.hit one.attack
-		one.hit two.attack
-	else
-		one.hit two.attack
-		two.hit one.attack
-	end
-end
+# def battle one, two
+# 	if one.speed > two.speed
+# 		two.hit one.attack
+# 		one.hit two.attack
+# 	else
+# 		one.hit two.attack
+# 		two.hit one.attack
+# 	end
+# end
 
-4.times do
-	battle cat, dog
-	if cat.hp <= 0
-		break
-	end
-	if dog.hp <= 0
-		break
-	end
-end
-
-puts "#{cat.name}: #{cat.hp}"
-puts "#{dog.name}: #{dog.hp}"
-
+# 4.times do
+# 	battle cat, dog
+# 	if cat.hp <= 0
+# 		break
+# 	end
+# 	if dog.hp <= 0
+# 		break
+# 	end
+# end
 
 class FighterSprite
  
@@ -123,7 +119,7 @@ class FighterSprite
     # @image and @rect are expected by the Rubygame sprite code
     @image = Rubygame::Surface.load "asteroid.png"
     @rect  = @image.make_rect
-    @rect.topleft = [200,300]
+    @rect.topleft = [200, 300]
  
   end
  
@@ -180,7 +176,6 @@ class Game
   		update
 	end
 end
-
 
 game = Game.new()
 
