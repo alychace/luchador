@@ -1,3 +1,6 @@
+
+require 'rubygame'
+
 class Fighter
 	def initialize hp, attack, defense, name, speed
 		@name = name
@@ -90,3 +93,79 @@ end
 
 puts "#{cat.name}: #{cat.hp}"
 puts "#{dog.name}: #{dog.hp}"
+
+
+class FighterSprite
+ 
+  # Turn this object into a sprite
+  include Rubygame::Sprites::Sprite
+ 
+  def initialize
+    # Invoking the base class constructor is important and yet easy to forget:
+    super()
+ 
+    # @image and @rect are expected by the Rubygame sprite code
+    @image = Rubygame::Surface.load "asteroid.png"
+    @rect  = @image.make_rect
+ 
+  end
+ 
+  def update  seconds_passed
+  end
+ 
+  def draw  on_surface
+    @image.blit  on_surface, @rect
+  end
+end
+
+SCREEN = Rubygame::Screen.open [ 640, 480]
+
+class Game
+	def initialize screen = SCREEN
+		@clock = Rubygame::Clock.new
+		@clock.target_framerate = 60
+		@clock.enable_tick_events
+ 
+		@screen = screen
+		@screen.title = "Luchador"
+
+		@background = Rubygame::Surface.load "background.png"
+		@background.blit @screen, [ 0, 0]
+		# or drawn with a single method invocation.
+		@sprites = Rubygame::Sprites::Group.new
+		Rubygame::Sprites::UpdateGroup.extend_object @sprites
+		3.times do @sprites << FighterSprite.new end
+		@sprites.draw @screen
+ 
+
+		@screen.flip()
+
+		@event_queue = Rubygame::EventQueue.new
+		@event_queue.enable_new_style_events
+
+	end
+
+	def update
+
+	end
+
+	def event_input
+		should_run = true
+		while should_run do
+ 
+  			seconds_passed = @clock.tick().seconds
+ 
+  			@event_queue.each do |event|
+    			case event
+      				when Rubygame::Events::QuitRequested, Rubygame::Events::KeyReleased
+        			should_run = false
+    			end
+  			end
+  		end
+	end
+end
+
+
+game = Game.new()
+
+game.event_input
