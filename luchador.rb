@@ -1,4 +1,4 @@
-
+#!/usr/bin/ruby
 require 'rubygame'
 
 class Fighter
@@ -107,6 +107,7 @@ class FighterSprite
     # @image and @rect are expected by the Rubygame sprite code
     @image = Rubygame::Surface.load "asteroid.png"
     @rect  = @image.make_rect
+    @rect.topleft = [200,300]
  
   end
  
@@ -137,12 +138,10 @@ class Game
 		3.times do @sprites << FighterSprite.new end
 		@sprites.draw @screen
  
-
 		@screen.flip()
 
 		@event_queue = Rubygame::EventQueue.new
 		@event_queue.enable_new_style_events
-
 	end
 
 	def update
@@ -162,6 +161,7 @@ class Game
     			end
   			end
   		end
+  		update
 	end
 end
 
