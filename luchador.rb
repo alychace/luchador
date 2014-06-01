@@ -108,27 +108,23 @@ end
 # end
 
 class FighterSprite
+
+	include Rubygame::Sprites::Sprite
  
-  # Turn this object into a sprite
-  include Rubygame::Sprites::Sprite
- 
-  def initialize
-    # Invoking the base class constructor is important and yet easy to forget:
-    super()
- 
-    # @image and @rect are expected by the Rubygame sprite code
-    @image = Rubygame::Surface.load "asteroid.png"
-    @rect  = @image.make_rect
-    @rect.topleft = [200, 300]
- 
+	def initialize
+    	super()
+
+    	@image = Rubygame::Surface.load "asteroid.png"
+    	@rect  = @image.make_rect
+    	@rect.topleft = [200, 300]
   end
  
-  def update  seconds_passed
-  end
+ 	def update seconds_passed
+  	end
  
-  def draw  on_surface
-    @image.blit  on_surface, @rect
-  end
+  	def draw on_surface
+    	@image.blit on_surface, @rect
+  	end
 end
 
 SCREEN = Rubygame::Screen.open [ 640, 480]
