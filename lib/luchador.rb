@@ -17,6 +17,9 @@
 
 require 'rubygame'
 
+directory = File.dirname(__FILE__)
+PATH = File.expand_path(directory)
+
 class Fighter
 	def initialize hp, attack, defense, name, speed
 		@name = name
@@ -62,20 +65,6 @@ class Fighter
 
 end
 
-# cat = Cat.new "cat"
-
-# dog = Dog.new "dog"
-
-# 4.times do
-# 	battle cat, dog
-# 	if cat.hp <= 0
-# 		break
-# 	end
-# 	if dog.hp <= 0
-# 		break
-# 	end
-# end
-
 class CatSprite < Fighter
 	include Rubygame::Sprites::Sprite
  
@@ -87,7 +76,7 @@ class CatSprite < Fighter
 		@defense = 5
 		@speed = 10
 
-    	@image = Rubygame::Surface.load "cat.png"
+    	@image = Rubygame::Surface.load File.join(PATH, "cat.png")
     	@rect  = @image.make_rect
     	@rect.topleft = position
 	end
@@ -97,7 +86,6 @@ class CatSprite < Fighter
     	@image.blit on_surface, @rect
   	end
 end
-
 
 class DogSprite < Fighter
 	include Rubygame::Sprites::Sprite
@@ -110,7 +98,7 @@ class DogSprite < Fighter
 		@defense = 7
 		@speed = 7
 
-    	@image = Rubygame::Surface.load "dog.png"
+    	@image = Rubygame::Surface.load File.join(PATH, "dog.png")
     	@rect  = @image.make_rect
     	@rect.topleft = position
 	end
@@ -124,7 +112,7 @@ end
 Rubygame::TTF.setup
 SCREEN = Rubygame::Screen.open [640, 480]
 
-class Game
+class Luchador
 	def initialize screen = SCREEN
 		@clock = Rubygame::Clock.new
 		@clock.target_framerate = 60
@@ -133,7 +121,7 @@ class Game
 		@screen = screen
 		@screen.title = "Luchador"
 
-		@background = Rubygame::Surface.load "background.png"
+		@background = Rubygame::Surface.load File.join(PATH, "background.png")
 		@background.blit @screen, [0, 0]
 		# or drawn with a single method invocation.
 		@dogs = Rubygame::Sprites::Group.new
@@ -161,7 +149,7 @@ class Game
 	end
 
 	def update_text
-		@font = Rubygame::TTF.new "Lato-Regular.ttf", 20
+		@font = Rubygame::TTF.new File.join(PATH, "Lato-Regular.ttf"), 20
 		@text_surface = @font.render_utf8 "#{@dogs[0].name}: #{@dogs[0].hp}", true, [ 0xee, 0xee, 0x33]
 		rt = @text_surface.make_rect
 		rt.topleft = [8, 8]
@@ -223,7 +211,3 @@ class Game
   		end
 	end
 end
-
-game = Game.new()
-
-game.event_input
