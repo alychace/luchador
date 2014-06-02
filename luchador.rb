@@ -24,41 +24,40 @@ class Fighter
 		@attack = attack
 		@defense = defense
 		@speed = speed
+		@attackup = 0
 	end
-
 	def hp
 		@hp
 	end
-
 	def name
 		@name
 	end
-
 	def attack
-		@attack
+		@attack + @attackup
 	end
-
 	def defense
 		@defense
 	end
-
 	def speed
 		@speed
 	end
-
 	def hit power
 		power = power / (@defense * 0.5)
 		@hp = @hp - power
 	end
-
 	def heal
 		@hp = @hp + 1
 	end
-
 	def kill
 		puts "#{@name} has died."
 		@hp = 0
 		@attack = 0
+	end
+	def bite
+		@attackup = 1
+	end
+	def scratch
+		@attackup = .5
 	end
 
 end
@@ -107,21 +106,36 @@ end
 # 	end
 # end
 
-class FighterSprite
-
+class CatSprite < Cat
 	include Rubygame::Sprites::Sprite
  
-	def initialize
+	def initialize position
     	super()
 
-    	@image = Rubygame::Surface.load "asteroid.png"
+    	@image = Rubygame::Surface.load "cat.png"
     	@rect  = @image.make_rect
-    	@rect.topleft = [200, 300]
-  end
- 
+    	@rect.topleft = position
+	end
  	def update seconds_passed
   	end
+  	def draw on_surface
+    	@image.blit on_surface, @rect
+  	end
+end
+
+
+class DogSprite < Dog
+	include Rubygame::Sprites::Sprite
  
+	def initialize position
+    	super()
+
+    	@image = Rubygame::Surface.load "dog.png"
+    	@rect  = @image.make_rect
+    	@rect.topleft = position
+	end
+ 	def update seconds_passed
+  	end
   	def draw on_surface
     	@image.blit on_surface, @rect
   	end
@@ -139,11 +153,20 @@ class Game
 		@screen.title = "Luchador"
 
 		@background = Rubygame::Surface.load "background.png"
-		@background.blit @screen, [ 0, 0]
+		@background.blit @screen, [0, 0]
 		# or drawn with a single method invocation.
 		@sprites = Rubygame::Sprites::Group.new
 		Rubygame::Sprites::UpdateGroup.extend_object @sprites
-		3.times do @sprites << FighterSprite.new end
+		2.times do
+			x = (30..320).to_a.sample
+			y = (30..240).to_a.sample
+			@sprites << CatSprite.new([x, y])
+		end
+		2.times do
+			x = (320..610).to_a.sample
+			y = (240..450).to_a.sample
+			@sprites << DogSprite.new([x, y])
+		end
 		@sprites.draw @screen
  
 		@screen.flip()
@@ -151,20 +174,16 @@ class Game
 		@event_queue = Rubygame::EventQueue.new
 		@event_queue.enable_new_style_events
 	end
-
 	def update
 
 	end
-
 	def event_input
 		should_run = true
 		while should_run do
- 
   			seconds_passed = @clock.tick().seconds
- 
   			@event_queue.each do |event|
     			case event
-      				when Rubygame::Events::QuitRequested, Rubygame::Events::KeyReleased
+      				when Rubygame::Events::QuitRequested
         			should_run = false
     			end
   			end
