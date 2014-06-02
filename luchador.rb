@@ -33,7 +33,7 @@ class Fighter
 		@name
 	end
 	def attack
-		@attack + @attackup
+		@attack# + @attackup
 	end
 	def defense
 		@defense
@@ -57,44 +57,14 @@ class Fighter
 		@attackup = 1
 	end
 	def scratch
-		@attackup = .5
+		@attackup = 0.5
 	end
 
-end
-
-class Dog < Fighter
-	def initialize name
-		@name = name
-		@hp = 10
-		@attack = 6
-		@defense = 7
-		@speed = 7
-	end
-end
-
-class Cat < Fighter
-	def initialize name
-		@name = name
-		@hp = 10
-		@attack = 8
-		@defense = 5
-		@speed = 10
-	end
 end
 
 # cat = Cat.new "cat"
 
 # dog = Dog.new "dog"
-
-# def battle one, two
-# 	if one.speed > two.speed
-# 		two.hit one.attack
-# 		one.hit two.attack
-# 	else
-# 		one.hit two.attack
-# 		two.hit one.attack
-# 	end
-# end
 
 # 4.times do
 # 	battle cat, dog
@@ -106,11 +76,16 @@ end
 # 	end
 # end
 
-class CatSprite < Cat
+class CatSprite < Fighter
 	include Rubygame::Sprites::Sprite
  
-	def initialize position
+	def initialize name, position
     	super()
+    	@name = name
+		@hp = 10
+		@attack = 8
+		@defense = 5
+		@speed = 10
 
     	@image = Rubygame::Surface.load "cat.png"
     	@rect  = @image.make_rect
@@ -124,11 +99,16 @@ class CatSprite < Cat
 end
 
 
-class DogSprite < Dog
+class DogSprite < Fighter
 	include Rubygame::Sprites::Sprite
  
-	def initialize position
+	def initialize name, position
     	super()
+		@name = name
+		@hp = 10
+		@attack = 6
+		@defense = 7
+		@speed = 7
 
     	@image = Rubygame::Surface.load "dog.png"
     	@rect  = @image.make_rect
@@ -141,7 +121,8 @@ class DogSprite < Dog
   	end
 end
 
-SCREEN = Rubygame::Screen.open [ 640, 480]
+Rubygame::TTF.setup
+SCREEN = Rubygame::Screen.open [640, 480]
 
 class Game
 	def initialize screen = SCREEN
@@ -155,40 +136,91 @@ class Game
 		@background = Rubygame::Surface.load "background.png"
 		@background.blit @screen, [0, 0]
 		# or drawn with a single method invocation.
-		@sprites = Rubygame::Sprites::Group.new
-		Rubygame::Sprites::UpdateGroup.extend_object @sprites
+		@dogs = Rubygame::Sprites::Group.new
+		@cats = Rubygame::Sprites::Group.new
+		Rubygame::Sprites::UpdateGroup.extend_object @dogs
+		Rubygame::Sprites::UpdateGroup.extend_object @cats
 		2.times do
 			x = (30..320).to_a.sample
 			y = (30..240).to_a.sample
-			@sprites << CatSprite.new([x, y])
+			@cats << CatSprite.new("cat", [x, y])
 		end
 		2.times do
 			x = (320..610).to_a.sample
 			y = (240..450).to_a.sample
-			@sprites << DogSprite.new([x, y])
+			@dogs << DogSprite.new("dog", [x, y])
 		end
-		@sprites.draw @screen
+		@cats.draw @screen
+		@dogs.draw @screen
+		update_text
  
 		@screen.flip()
 
 		@event_queue = Rubygame::EventQueue.new
 		@event_queue.enable_new_style_events
 	end
+
+	def update_text
+		@font = Rubygame::TTF.new "Lato-Regular.ttf", 20
+		@text_surface = @font.render_utf8 "#{@dogs[0].name}: #{@dogs[0].hp}", true, [ 0xee, 0xee, 0x33]
+		rt = @text_surface.make_rect
+		rt.topleft = [8, 8]
+		@text_surface.blit @screen, rt
+
+		@text_surface = @font.render_utf8 "#{@dogs[1].name}: #{@dogs[1].hp}", true, [ 0xee, 0xee, 0x33]
+		rt = @text_surface.make_rect
+		rt.topleft = [8, 28]
+		@text_surface.blit @screen, rt
+
+		@text_surface = @font.render_utf8 "#{@cats[0].name}: #{@cats[0].hp}", true, [ 0xee, 0xee, 0x33]
+		rt = @text_surface.make_rect
+		rt.topleft = [8, 48]
+		@text_surface.blit @screen, rt
+
+		@text_surface = @font.render_utf8 "#{@cats[1].name}: #{@cats[1].hp}", true, [ 0xee, 0xee, 0x33]
+		rt = @text_surface.make_rect
+		rt.topleft = [8, 68]
+		@text_surface.blit @screen, rt
+	end
+
+	def battle one, two
+		if one.speed > two.speed
+			two.hit one.attack
+			one.hit two.attack
+		else
+			one.hit two.attack
+			two.hit one.attack
+		end
+		puts "#{one.name}: #{one.hp}"
+		puts "#{two.name}: #{two.hp}"
+	end
 	def update
+		@background.blit @screen, [0, 0]
+		@cats.draw @screen
+		@dogs.draw @screen
+		update_text
+		@screen.flip()
 
 	end
 	def event_input
 		should_run = true
 		while should_run do
+			update
   			seconds_passed = @clock.tick().seconds
   			@event_queue.each do |event|
     			case event
       				when Rubygame::Events::QuitRequested
-        			should_run = false
+        				should_run = false
+        			when Rubygame::Events::KeyReleased
+        				battle(@cats.sample, @dogs.sample)
+        				for sprite in @cats + @dogs
+        					if sprite.hp <= 0
+        						sprite.kill
+        					end
+        				end
     			end
   			end
   		end
-  		update
 	end
 end
 
