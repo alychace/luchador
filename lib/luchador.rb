@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 # Luchador - and RPG battler.
-# Copyright (C) 2014 Thomas Chace <tchacex@gmail.com
+# Copyright (C) 2014 Marilyn Chace <marilyn@marilync.co>
 
 # Luchador is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
